@@ -3,7 +3,7 @@ const sqlite3 = require('sqlite3').verbose();
 const bodyParser = require('body-parser');
 
 const app = express();
-const dbPath = './expenses.db';
+const dbPath = './data/expenses.db';
 const db = new sqlite3.Database(dbPath);
 
 app.set('view engine', 'ejs');
