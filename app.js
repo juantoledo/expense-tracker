@@ -3,7 +3,8 @@ const sqlite3 = require('sqlite3').verbose();
 const bodyParser = require('body-parser');
 
 const app = express();
-const db = new sqlite3.Database('./expenses.db');
+const dbPath = './expenses.db';
+const db = new sqlite3.Database(dbPath);
 
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: true }));
