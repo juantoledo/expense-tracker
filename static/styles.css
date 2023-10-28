@@ -1,0 +1,159 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 1000px;
+    margin: 50px auto;
+    background-color: #fff;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1, h2 {
+    text-align: center;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+input, button {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    outline: none;
+}
+
+button {
+    cursor: pointer;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+/* Responsive styles */
+@media screen and (max-width: 400px) {
+    .container {
+        margin: 20px 10px;
+    }
+
+    input, button {
+        width: 100%;
+    }
+
+    .date, .amount, .label {
+        font-size: 0.9em;
+    }
+}
+
+
+li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 5px;
+}
+
+form.inline {
+    display: inline;
+}
+
+.inactive {
+    color: gray;
+}
+
+.entry-list {
+    width: 100%;
+    font-size: 0.8em; /* Adjust this value to make the text smaller or larger */
+}
+
+
+.entry {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.date, .amount, .label {
+    flex: 1;
+    padding: 0 10px;
+    text-align: center;
+}
+
+.date {
+    text-align: left;
+}
+
+.label {
+    text-align: right;
+}
+
+.delete-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    text-decoration: none;
+}
+
+.delete-btn:hover {
+    opacity: 0.7;
+}
+
+
+/* Dark Mode Styles */
+body.dark-mode {
+    background-color: #121212; /* Dark background */
+    color: #ffffff; /* White text */
+}
+
+body.dark-mode .container {
+    background-color: #1f1f1f; /* Slightly lighter than body for contrast */
+}
+
+body.dark-mode a {
+    color: #bb86fc; /* Purple accent for links in dark mode */
+}
+
+.top-left {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+}
+
+.top-right {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Creates a space between items */
+}
+
+#themeSwitcher {
+    text-decoration: none;
+    color: inherit; /* so the link uses the current theme color */
+    transition: color 0.3s ease; /* smooth transition on theme switch */
+}
+
+#themeSwitcher:hover {
+    color: #888; /* change color on hover for a subtle effect */
+}

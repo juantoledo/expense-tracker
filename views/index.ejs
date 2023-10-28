@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Registro de Gastos</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    <div class="top-left">
+        <a href="#" id="themeSwitcher"><i class="material-icons">brightness_6</i></a>
+    </div>
+    <div class="top-right">
+        <a href="/quick-stats"><i class="material-icons">insert_chart_outlined</i></a>
+        <a href="/all-entries"><i class="material-icons">list</i></a>
+    </div>
+    <div class="container">
+        <h1>Registro Simple de Gastos</h1>
+        <form action="/add" method="post">
+            <label for="amount">Monto:</label>
+            <input type="text" id="amount" name="amount" inputmode="numeric" oninput="formatAsCLP(this); this.setCustomValidity('')" required>
+            <label for="label">Descripción:</label>
+            <input list="labels" type="text" name="label" required>
+            <datalist id="labels">
+                <% labels.forEach(label => { %>
+                    <option value="<%= label.label %>">
+                <% }); %>
+            </datalist>
+            <button type="submit"><i class="material-icons">save</i></button>
+        </form>
+        <h2>Gastos Totales: <%= formatChileanPeso(totalExpense) %></h2>
+        <h2>Gastos:</h2>
+        <ul>
+            <% expenses.forEach(expense => { %>
+                <li>
+                    <%= expense.label %> (<%= formatChileanPeso(expense.amount) %>) - <%= formatDateToDDMMYYYY(expense.datetime) %> 
+                    <form action="/delete/<%= expense.id %>" method="post" class="inline" onsubmit="return confirmDeleteEntry();">
+                        <a href="#" class="delete-btn" data-id="<%= expense.id %>"><i class="material-icons" style="color: red;">delete</i></a>
+                    </form>
+                </li>                            
+            <% }); %>
+        </ul>
+    </div>
+    <script>
+        function confirmDelete() {
+            return confirm("¿Estás seguro de que quieres eliminar todos los gastos?");
+        }
+
+        function formatAsCLP(inputElement) {
+            let num = inputElement.value.replace(/[^\d]/g, ""); // Remove non-digits
+            if (num === "") {
+                inputElement.value = "";
+            } else {
+                inputElement.value = "$" + parseInt(num).toLocaleString('es-CL');
+            }
+        }
+
+        function confirmDeleteEntry() {
+            return confirm("¿Estás seguro de que quieres eliminar esta entrada?");
+        }
+
+        function formatDateToDDMMYYYY(datetime) {
+            const date = new Date(datetime);
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+            const year = date.getFullYear();
+            return `${day}/${month}/${year}`;
+        }
+
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const deleteLinks = document.querySelectorAll('.delete-btn');
+            deleteLinks.forEach(link => {
+                link.addEventListener('click', function(event) {
+                    event.preventDefault();
+
+                    const isConfirmed = window.confirm('¿Estás seguro de que quieres eliminar esta entrada?');
+
+                    if (isConfirmed) {
+                        // Check if the clicked element is the <i> icon or the <a> link
+                        const targetElement = event.target.tagName === 'I' ? event.target.parentElement : event.target;
+                        const expenseId = targetElement.getAttribute('data-id');
+
+                        // Trigger the delete action
+                        fetch(`/delete/${expenseId}`, {
+                            method: 'DELETE'
+                        })
+                        .then(response => {
+                            if (response.ok) {
+                                // Remove the entry from the DOM or reload the page
+                                location.reload();
+                            }
+                        });
+                    }
+                });
+            });
+        });
+
+    </script>
+    <script src="/static/js/themeSwitcher.js"></script>
+</body>
+</html>
