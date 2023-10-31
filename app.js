@@ -146,6 +146,46 @@ app.get('/quick-stats', (req, res) => {
 });
 
 
+app.get('/data-visualization', (req, res) => {
+    // SQL query for Monthly Trends
+    const query = `
+        SELECT strftime('%Y-%m', datetime) as year_month, 
+               SUM(amount) as totalAmount
+        FROM expenses 
+        GROUP BY year_month 
+        ORDER BY year_month ASC
+    `;
+
+    // SQL query for Category Breakdown
+    const categoryBreakdownQuery = `
+        SELECT label, SUM(amount) as total 
+        FROM expenses 
+        WHERE active = 1 
+        GROUP BY label`;
+
+    // Execute the Monthly Trends query
+    db.all(query, [], (err, trends) => {
+        if (err) {
+            throw err;
+        }
+
+        // Inside the callback, execute the Category Breakdown query
+        db.all(categoryBreakdownQuery, [], (err, categoriesData) => {
+            if (err) {
+                throw err;
+            }
+
+            // Render the visualizacionDatos.ejs with both datasets
+            res.render('data-visualization.ejs', {
+                trends: trends,
+                categoriesData: categoriesData
+            });
+        });
+    });
+});
+
+
+
 
 const PORT = 3000;
 app.listen(PORT, () => {

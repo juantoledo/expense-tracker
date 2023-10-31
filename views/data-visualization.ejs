@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Visualización de Datos</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/static/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="top-left">
+        <a href="#" id="themeSwitcher"><i class="material-icons">brightness_6</i></a>
+    </div> 
+    <div class="container">
+        <h1>Visualización de Datos</h1>
+
+        <h2>Gráfico de Gastos</h2>
+        <!-- Monthly Trends Chart -->
+        <canvas id="monthlyTrendsChart" width="400" height="200"></canvas>
+
+        <h2>Desglose por Categoría</h2>
+        <canvas id="categoryBreakdownChart" width="400" height="200"></canvas>      
+
+        <h2>Tendencias</h2>
+        <div class="chart-container">
+            <canvas id="yearlySummaryChart"></canvas>
+        </div>
+        
+        <a href="/">Volver a la página principal</a>
+    </div>
+    <script>
+        const ctx = document.getElementById('monthlyTrendsChart').getContext('2d');
+        const labels = [<%- trends.map(item => `'${item.year_month}'`).join(",") %>];
+        const data = [<%- trends.map(item => item.totalAmount).join(",") %>];
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Cantidad Gastada',
+                    data: data,
+                    borderColor: 'rgb(75, 192, 192)',
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Category Breakdown Pie Chart
+        const categoryCtx = document.getElementById('categoryBreakdownChart').getContext('2d');
+        const categoryLabels = [<%- categoriesData.map(item => `'${item.label}'`).join(",") %>];
+        const categoryData = [<%- categoriesData.map(item => item.total).join(",") %>];
+        const categoryColors = categoryLabels.map(() => getRandomColor());
+
+        new Chart(categoryCtx, {
+            type: 'pie',
+            data: {
+                labels: categoryLabels,
+                datasets: [{
+                    data: categoryData,
+                    backgroundColor: categoryColors
+                }]
+            },
+            options: {
+                responsive: true,
+                legend: {
+                    display: true,
+                    position: 'top'
+                }
+            }
+        });
+
+        function getRandomColor() {
+            const r = Math.floor(Math.random() * 256);
+            const g = Math.floor(Math.random() * 256);
+            const b = Math.floor(Math.random() * 256);
+            return `rgba(${r}, ${g}, ${b}, 0.5)`;
+        }
+
+        const trends = <%- JSON.stringify(trends) %>;
+        const categoriesData = <%- JSON.stringify(categoriesData) %>;
+
+        // Data for the Yearly Summary
+        const yearlySummaryLabels = trends.map(item => item.year_month);
+        const yearlySummaryData = trends.map(item => item.totalAmount);
+
+        // Render the Yearly Summary spider chart
+        const yearlySummaryCtx = document.getElementById('yearlySummaryChart').getContext('2d');
+        new Chart(yearlySummaryCtx, {
+            type: 'radar',
+            data: {
+                labels: yearlySummaryLabels,
+                datasets: [{
+                    label: 'Gastos Mensuales',
+                    data: yearlySummaryData,
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scale: {
+                    ticks: {
+                        beginAtZero: true
+                    }
+                },
+                legend: {
+                    display: true,
+                    position: 'top'
+                }
+            }
+        });
+
+    </script>
+    <script src="/static/js/themeSwitcher.js"></script>
+</body>
+</html>
