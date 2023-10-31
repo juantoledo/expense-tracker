@@ -52,16 +52,40 @@ app.get('/', (req, res) => {
 });
 
 app.get('/all-entries', (req, res) => {
-    db.all("SELECT *, strftime('%Y-%m', datetime) as year_month FROM expenses WHERE active = 1 ORDER BY datetime DESC", [], (err, rows) => {
+    const query = `
+        WITH MonthlySums AS (
+            SELECT strftime('%Y-%m', datetime) as year_month, 
+                   SUM(amount) as totalAmount,
+                   NULL as id, NULL as amount, NULL as label, NULL as datetime, NULL as active
+            FROM expenses 
+            WHERE active = 1 
+            GROUP BY year_month
+        )
+        SELECT year_month, totalAmount, id, amount, label, datetime, active 
+        FROM (
+            SELECT strftime('%Y-%m', datetime) as year_month, 
+                   NULL as totalAmount, 
+                   id, amount, label, datetime, active
+            FROM expenses 
+            WHERE active = 1
+            UNION ALL
+            SELECT * FROM MonthlySums
+        )
+        ORDER BY year_month DESC, datetime DESC, id DESC;
+    `;
+
+    db.all(query, [], (err, rows) => {
         if (err) {
             throw err;
         }
         res.render('allEntries.ejs', {
             expenses: rows,
-            formatDateToDDMMYYYY: formatDateToDDMMYYYY // Pass the function to the template
+            formatDateToDDMMYYYY: formatDateToDDMMYYYY
         });
     });
 });
+
+
 
 
 app.post('/add', (req, res) => {
